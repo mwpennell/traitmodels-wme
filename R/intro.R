@@ -21,6 +21,7 @@ library(ape)
 
 ## For example, my own package `arbutus` for assessing the adequacy of phylogenetic modesl of trait evolution is only on GitHub. To load this in to R, type
 ## ```
+## library(devtools)
 ## install_github("mwpennell/arbutus")
 ## ```
 
