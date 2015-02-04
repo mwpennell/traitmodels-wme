@@ -4,6 +4,8 @@
 knitr::opts_chunk$set(tidy=FALSE)
 ```
 
+https://github.com/mwpennell/traitmodels-wme/R
+
 In this tutorial, I will briefly go over the basics of working in R. For many people this may be review and for those who are just starting out, there are many, much more comprehensive introductions to R available on the web. The purpose of this exercise is simply to make sure that everyone is on the same page so we can dive into the more interesting things.
 
 ### Packages/Getting started

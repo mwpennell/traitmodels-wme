@@ -8,10 +8,36 @@ install.packages("geiger")
 
 ```r
 library(geiger)
+packageVersion("geiger")
 ```
 
 ```
-## Loading required package: ape
+## [1] '2.0.4'
+```
+
+In case geiger's package version is less than 1.9
+
+```r
+library(devtools)
+install_github("mwpennell/geiger-v2")
+```
+
+```
+## Downloading github repo mwpennell/geiger-v2@master
+## Installing geiger
+## '/usr/lib/R/bin/R' --vanilla CMD INSTALL  \
+##   '/tmp/Rtmpswhy9y/devtools5b9178e11a91/mwpennell-geiger-v2-6d28b51'  \
+##   --library='/usr/local/lib/R/site-library' --install-tests
+```
+
+```
+## Error: Command failed (1)
+```
+
+
+
+```r
+rm(list=ls())
 ```
 
 Load the Cyprinodon tree and dataset
@@ -23,6 +49,46 @@ Tip: Setting `row.names=1` assigns the rownames to be equal to the first column 
 
 ```r
 cyp_dat <- read.csv("datasets/cyprinodon.csv", row.names=1)
+
+head(cyp_dat)
+```
+
+```
+##                                 A1         A23  body.depth closing.lever
+## Cyprinodon_albivelis    0.02798847  0.05233315  0.10385841    0.07847281
+## Cyprinodon_alvarezi     0.00628198  0.01576924  0.01721441    0.06369799
+## Cyprinodon_artifrons    0.02702148  0.06121726  0.10887262   -0.16395200
+## Cyprinodon_atrorus      0.00235965  0.01087319  0.03061420   -0.16382930
+## Cyprinodon_beltrani    -0.08306680 -0.00784860 -0.03041860   -0.21565530
+## Cyprinodon_bifasciatus  0.00338178  0.02517095 -0.02424630   -0.12252760
+##                              gape  jaw.length protrusion.distance
+## Cyprinodon_albivelis    0.1067667  0.10995734          0.07577510
+## Cyprinodon_alvarezi     0.2489257  0.04573827         -0.04893370
+## Cyprinodon_artifrons   -0.1007200 -0.07247250         -0.04437980
+## Cyprinodon_atrorus     -0.0392393 -0.04421680          0.14170828
+## Cyprinodon_beltrani    -0.2130060 -0.17774750         -0.01997620
+## Cyprinodon_bifasciatus -0.3093083 -0.01509750          0.00788962
+##                        lower.premaxilla    maxilla maxillary.process
+## Cyprinodon_albivelis         0.20329719  0.1587159        0.03742575
+## Cyprinodon_alvarezi          0.11370293  0.1232416       -0.09776890
+## Cyprinodon_artifrons        -0.08089660 -0.1379473       -0.07011640
+## Cyprinodon_atrorus           0.03553484 -0.0135882       -0.08654130
+## Cyprinodon_beltrani         -0.19863320 -0.2754654       -0.25740750
+## Cyprinodon_bifasciatus      -0.16756890 -0.1267028       -0.14829150
+##                        opening.lever       orbit cranial.width
+## Cyprinodon_albivelis      0.15588157 -0.05378520    0.18654154
+## Cyprinodon_alvarezi       0.22112680 -0.08367770    0.06386122
+## Cyprinodon_artifrons     -0.10360530  0.06582620   -0.15708530
+## Cyprinodon_atrorus        0.02886228 -0.04347350    0.07857652
+## Cyprinodon_beltrani      -0.19188200  0.01898664   -0.19394700
+## Cyprinodon_bifasciatus   -0.08165260  0.08687082    0.03303227
+##                        tooth.number tooth.length upper.premaxilla
+## Cyprinodon_albivelis    -0.07968100   0.17450435       0.09077204
+## Cyprinodon_alvarezi     -0.00263750  -0.11585610      -0.02328730
+## Cyprinodon_artifrons     0.03871055   0.05936087      -0.02612810
+## Cyprinodon_atrorus      -0.07266750   0.01518795      -0.00106250
+## Cyprinodon_beltrani     -0.04978080  -0.10276870      -0.12328210
+## Cyprinodon_bifasciatus   0.03997953   0.18987733       0.07921030
 ```
 
 For comparative analyses, we need to match the tree and the data. If data is in the form of a vector, names must match the tip labels of the tree. If data is a matrix or data.frame, then rownames need to match the tree. **N.B.:** geiger automatically checks and matches the names of the data and the tree but not all packages/functions do this. It is good practice to **always** do this manually to avoid non-sensical results
@@ -31,17 +97,61 @@ Use geiger's `treedata()` function for this
 
 ```r
 cyp_td <- treedata(cyp_phy, cyp_dat)
+str(cyp_td)
 ```
+
+```
+## List of 2
+##  $ phy :List of 4
+##   ..$ edge       : int [1:78, 1:2] 41 42 43 43 44 44 45 45 46 47 ...
+##   ..$ Nnode      : int 39
+##   ..$ tip.label  : chr [1:40] "Cyprinodon_alvarezi" "Cyprinodon_artifrons" "Cyprinodon_maya" "Cyprinodon_labiosus" ...
+##   ..$ edge.length: num [1:78] 0.1115 0.0518 0.8367 0.7244 0.1123 ...
+##   ..- attr(*, "class")= chr "phylo"
+##   ..- attr(*, "order")= chr "cladewise"
+##  $ data: num [1:40, 1:16] 0.02799 0.00628 0.02702 0.00236 -0.08307 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:40] "Cyprinodon_albivelis" "Cyprinodon_alvarezi" "Cyprinodon_artifrons" "Cyprinodon_atrorus" ...
+##   .. ..$ : chr [1:16] "A1" "A23" "body.depth" "closing.lever" ...
+```
+
+```r
+dummy_tree <- cyp_phy
+head(dummy_tree$tip.label)
+```
+
+```
+## [1] "Cyprinodon_alvarezi"   "Cyprinodon_artifrons"  "Cyprinodon_maya"      
+## [4] "Cyprinodon_labiosus"   "Cyprinodon_beltrani"   "Cyprinodon_verecundus"
+```
+
+```r
+dummy_tree_drop <- drop.tip(dummy_tree, tip="Cyprinodon_alvarezi")
+dummy_tree_drop
+```
+
+```
+## 
+## Phylogenetic tree with 39 tips and 38 internal nodes.
+## 
+## Tip labels:
+## 	Cyprinodon_artifrons, Cyprinodon_maya, Cyprinodon_labiosus, Cyprinodon_beltrani, Cyprinodon_verecundus, Cyprinodon_esconditus, ...
+## 
+## Rooted; includes branch lengths.
+```
+
 
 These match. But here is what happens when this is not the case
 
 ```r
 data(geospiza)
-geo_td <- treedata(geospiza$phy, geospiza$dat)
+geo_phy <- geospiza$phy
+geo_dat <- geospiza$dat
+geo_td <- treedata(geo_phy, geo_dat)
 ```
 
 ```
-## Warning in treedata(geospiza$phy, geospiza$dat): The following tips were not found in 'data' and were dropped from 'phy':
+## Warning in treedata(geo_phy, geo_dat): The following tips were not found in 'data' and were dropped from 'phy':
 ## 	olivacea
 ```
 
@@ -100,6 +210,8 @@ Use "jaw.length" as the trait of interest. Use the `treedata` object because we 
 ```r
 states <- cyp_td$data[,"jaw.length"]
 tree <- cyp_td$phy
+
+states <- states[tree$tip.label]
 ```
 
 Brownian motion
@@ -167,6 +279,22 @@ fit_bm$opt
 ## 
 ## $aicc
 ## [1] -13.15409
+```
+
+```r
+fit_bm$opt$sigsq
+```
+
+```
+## [1] 0.1572397
+```
+
+```r
+fit_bm$opt$aic
+```
+
+```
+## [1] -13.47842
 ```
 
 Ornstein-Uhlenbeck
@@ -252,7 +380,13 @@ Calculate the phylogenetic half-life -- how long does it take for half the infro
 
 ```r
 phy_halflife <- log(2)/fit_ou$opt$alpha
+phy_halflife
 ```
+
+```
+## [1] 0.2549946
+```
+
 
 Compare this to total tree depth
 
@@ -280,7 +414,7 @@ fit_lambda$opt$lambda
 ```
 
 ```
-## [1] 9.233551e-17
+## [1] 6.150775e-206
 ```
 
 
@@ -309,7 +443,7 @@ sim_fit$opt$sigsq
 Now add error to the data
 
 ```r
-sim_dat_error <- sim_dat + rnorm(100, 0, sd=0.05)
+sim_dat_error <- sim_dat + rnorm(1000, 0, sd=0.1)
 
 sim_fit_error <- fitContinuous(sim_phy, sim_dat_error, SE=0, model="BM")
 
@@ -317,17 +451,17 @@ sim_fit_error$opt$sigsq
 ```
 
 ```
-## [1] 1.082018
+## [1] 1.130594
 ```
 
 ```r
-sim_fit_wse <- fitContinuous(sim_phy, sim_dat_error, SE=0.05, model="BM")
+sim_fit_wse <- fitContinuous(sim_phy, sim_dat_error, SE=0.1, model="BM")
 
 sim_fit_wse$opt$sigsq
 ```
 
 ```
-## [1] 1.041577
+## [1] 1.056451
 ```
 
 
@@ -337,12 +471,9 @@ Simulate characters on Cyprinodon tree because we don't have discrete data avail
 Make a Q matrix -- same as for molecular characters
 
 ```r
-Q <- matrix(c(-0.3, 0.3, 0.1, -0.1), nrow=2)
+Q <- matrix(c(-0.3, 0.3, 0.1, -0.1), nrow=2, byrow = TRUE)
+Q <- matrix(c(-0.3, 0.1, 0.3, -0.1), nrow=2)
 states_dis <- sim.char(tree, par=Q, model="discrete")[,,]
-```
-
-```
-## Error in .check.Qmatrix(m[[j]]): rows of 'Q' must sum to zero
 ```
 
 ### Fit discrete character models
@@ -353,44 +484,28 @@ Assume forward and backwards rates are equal ("ER" model)
 fit_sym <- fitDiscrete(tree, states_dis, model="ER")
 ```
 
-```
-## Error in treedata(phy, dat): object 'states_dis' not found
-```
-
 Allow the forward and backward rates to be different ("ARD" model)
 
 ```r
 fit_dif <- fitDiscrete(tree, states_dis, model="ARD")
 ```
 
-```
-## Error in treedata(phy, dat): object 'states_dis' not found
-```
-
 Compare the models
 
 ```r
+aic_sym <- fit_sym$opt$aic
+aic_dif <- fit_dif$opt$aic
+aic_dis <- c(aic_sym, aic_dif)
+
 aic_dis <- c(fit_sym$opt$aic, fit_dif$opt$aic)
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'fit_sym' not found
-```
-
-```r
 names(aic_dis) <- c("ER", "ARD")
-```
-
-```
-## Error in names(aic_dis) <- c("ER", "ARD"): object 'aic_dis' not found
-```
-
-```r
 aicw(aic_dis)
 ```
 
 ```
-## Error in aicw(aic_dis): object 'aic_dis' not found
+##          fit   delta         w
+## ER  23.93739 0.00000 0.6651534
+## ARD 25.31008 1.37269 0.3348466
 ```
 
 

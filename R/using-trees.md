@@ -20,6 +20,23 @@ tree <- read.tree("datasets/cyprinodon.tre")
 If file format is NEXUS, use `read.nexus()` rather than `read.tree()`
 read.nexus()
 
+
+```r
+is.ultrametric(tree)
+```
+
+```
+## [1] TRUE
+```
+
+```r
+is.rooted(tree)
+```
+
+```
+## [1] TRUE
+```
+
 Look at how trees are stored in ape's `phylo` format
 Let's you look at the structure of the object
 
@@ -84,116 +101,51 @@ tree$tip.label
 ## [39] "Cyprinodon_variegatus_EdinburgTX"         
 ## [40] "Cyprinodon_variegatus_FL_gulf"
 ```
+
+```r
+head(tree$tip.label)
+```
+
+```
+## [1] "Cyprinodon_alvarezi"   "Cyprinodon_artifrons"  "Cyprinodon_maya"      
+## [4] "Cyprinodon_labiosus"   "Cyprinodon_beltrani"   "Cyprinodon_verecundus"
+```
+
+```r
+tree2 <- tree
+
+tree2$tip.label[1] <- "Mynew_species"
+
+head(tree2$tip.label)
+```
+
+```
+## [1] "Mynew_species"         "Cyprinodon_artifrons"  "Cyprinodon_maya"      
+## [4] "Cyprinodon_labiosus"   "Cyprinodon_beltrani"   "Cyprinodon_verecundus"
+```
 An "edge" matrix representing all nodes on the tree with their descendents. Representation of the topology.
 
 ```r
-tree$edge
+head(tree$edge)
 ```
 
 ```
-##       [,1] [,2]
-##  [1,]   41   42
-##  [2,]   42   43
-##  [3,]   43    1
-##  [4,]   43   44
-##  [5,]   44    2
-##  [6,]   44   45
-##  [7,]   45    3
-##  [8,]   45   46
-##  [9,]   46   47
-## [10,]   47    4
-## [11,]   47    5
-## [12,]   46   48
-## [13,]   48    6
-## [14,]   48   49
-## [15,]   49    7
-## [16,]   49    8
-## [17,]   42   50
-## [18,]   50   51
-## [19,]   51   52
-## [20,]   52    9
-## [21,]   52   53
-## [22,]   53   10
-## [23,]   53   11
-## [24,]   51   54
-## [25,]   54   55
-## [26,]   55   12
-## [27,]   55   13
-## [28,]   54   56
-## [29,]   56   14
-## [30,]   56   15
-## [31,]   50   57
-## [32,]   57   16
-## [33,]   57   58
-## [34,]   58   59
-## [35,]   59   60
-## [36,]   60   17
-## [37,]   60   18
-## [38,]   59   19
-## [39,]   58   61
-## [40,]   61   20
-## [41,]   61   62
-## [42,]   62   21
-## [43,]   62   63
-## [44,]   63   22
-## [45,]   63   23
-## [46,]   41   64
-## [47,]   64   65
-## [48,]   65   24
-## [49,]   65   66
-## [50,]   66   25
-## [51,]   66   67
-## [52,]   67   26
-## [53,]   67   27
-## [54,]   64   68
-## [55,]   68   69
-## [56,]   69   28
-## [57,]   69   29
-## [58,]   68   70
-## [59,]   70   71
-## [60,]   71   30
-## [61,]   71   72
-## [62,]   72   31
-## [63,]   72   32
-## [64,]   70   73
-## [65,]   73   33
-## [66,]   73   74
-## [67,]   74   34
-## [68,]   74   75
-## [69,]   75   76
-## [70,]   76   35
-## [71,]   76   77
-## [72,]   77   36
-## [73,]   77   37
-## [74,]   75   78
-## [75,]   78   38
-## [76,]   78   79
-## [77,]   79   39
-## [78,]   79   40
+##      [,1] [,2]
+## [1,]   41   42
+## [2,]   42   43
+## [3,]   43    1
+## [4,]   43   44
+## [5,]   44    2
+## [6,]   44   45
 ```
 A vector containing all the branch lengths
 
 ```r
-tree$edge.length
+head(tree$edge.length)
 ```
 
 ```
-##  [1] 0.111505760 0.051787667 0.836706573 0.724393022 0.112313551
-##  [6] 0.044315589 0.067997962 0.020180328 0.035842316 0.011975318
-## [11] 0.011975318 0.022490215 0.025327420 0.013397745 0.011929675
-## [16] 0.011929675 0.032623714 0.110305493 0.290697523 0.454867510
-## [21] 0.420722964 0.034144547 0.034144547 0.077513643 0.137316706
-## [26] 0.530734684 0.530734684 0.655400484 0.012650906 0.012650906
-## [31] 0.453679225 0.402191301 0.039436342 0.055525110 0.278948846
-## [36] 0.028281003 0.028281003 0.307229849 0.070089687 0.292665272
-## [41] 0.173314405 0.119350867 0.041746724 0.077604143 0.077604143
-## [46] 0.230506569 0.177005509 0.592487921 0.209336171 0.383151750
-## [51] 0.286078667 0.097073083 0.097073083 0.282348451 0.442609986
-## [56] 0.044534994 0.044534994 0.054405108 0.317136006 0.115603865
-## [61] 0.078370571 0.037233295 0.037233295 0.167538112 0.265201759
-## [66] 0.035287247 0.229914511 0.029242847 0.144902781 0.055768883
-## [71] 0.047459671 0.008309212 0.008309212 0.011394776 0.189276889
-## [76] 0.080664798 0.108612090 0.108612090
+## [1] 0.11150576 0.05178767 0.83670657 0.72439302 0.11231355 0.04431559
 ```
 
 Some summary statistics for the tree:
@@ -207,11 +159,30 @@ Ntip(tree)
 ```
 ## [1] 40
 ```
+Number of nodes
+
+```r
+Nnode(tree)
+```
+
+```
+## [1] 39
+```
 
 Total tree depth
 
 ```r
-max(branching.times(tree))
+bt <- branching.times(tree)
+head(bt)
+```
+
+```
+##         41         42         43         44         45         46 
+## 1.00000000 0.88849424 0.83670657 0.11231355 0.06799796 0.04781763
+```
+
+```r
+max(bt)
 ```
 
 ```
@@ -221,7 +192,20 @@ max(branching.times(tree))
 We might want to change the elements of a tree. For example, for some analyses if we are only interested in relative divergence times, we may want to rescale the total tree depth to be one. This allows us to more easily compare the parameters of a trait model across different trees (e.g., the results of a Bayesian analysis)
 
 ```r
-tree$edge.length <- tree$edge.length/max(branching.times(tree))
+head(tree$edge.length)
+```
+
+```
+## [1] 0.11150576 0.05178767 0.83670657 0.72439302 0.11231355 0.04431559
+```
+
+```r
+tree$edge.length <- tree$edge.length * 2
+head(tree$edge.length)
+```
+
+```
+## [1] 0.22301152 0.10357533 1.67341315 1.44878604 0.22462710 0.08863118
 ```
 
 Now our tree has been rescaled
@@ -231,35 +215,49 @@ max(branching.times(tree))
 ```
 
 ```
-## [1] 1
+## [1] 2
 ```
 
 ## Plotting trees
 
+You can plot the tree by calling `plot.phylo`. Note that simply using `plot` will work just as well but I always use `plot.phylo` because a) it is more transparent and readable; and b) you can see the options
 
 ```r
 plot.phylo(tree)
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
+
+```r
+help(plot.phylo)
+```
+
+
+There are lots of options. Try typing `help(plot.phylo)`
+
+Default is to plot right facing trees but you can do plot "radial", "fan", "cladogram" or "unrooted". For example, a "fan" phylogeny
 
 ```r
 plot.phylo(tree, type="fan")
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-2.png) 
-
-```r
-plot.phylo(tree, type="fan", edge.color = "blue", cex=0.5)
-```
-
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-3.png) 
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png) 
+and a radial one
 
 ```r
 plot.phylo(tree, type="radial")
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-4.png) 
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png) 
+
+You can change the color of branches and the size of tip labels
+
+```r
+plot.phylo(tree, type="fan", edge.color = "blue", cex=0.5)
+```
+
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png) 
+
 
 Add a binary trait and plot it on the tree
 
@@ -270,8 +268,18 @@ col <- c("red", "blue")
 tiplabels(col=col[states], pch=19)
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png) 
 
+Add nodelabels
 
+```r
+nodelabels(1:(Ntip(tree)-1))
+```
+
+```
+## Error in rect(xl, yb, xr, yt, col = bg): plot.new has not been called yet
+```
+
+Exercise: Generate different plots
 
 

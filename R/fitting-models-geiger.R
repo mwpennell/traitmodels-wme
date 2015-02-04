@@ -6,20 +6,39 @@
 ##
 ## install.packages("geiger")
 library(geiger)
+packageVersion("geiger")
+
+## In case geiger's package version is less than 1.9
+library(devtools)
+install_github("mwpennell/geiger-v2")
+##
+
+rm(list=ls())
 
 ## Load the Cyprinodon tree and dataset
 cyp_phy <- read.tree("datasets/cyprinodon.tre")
 ## Tip: Setting `row.names=1` assigns the rownames to be equal to the first column (in this case the species names)
 cyp_dat <- read.csv("datasets/cyprinodon.csv", row.names=1)
 
+head(cyp_dat)
+
 ## For comparative analyses, we need to match the tree and the data. If data is in the form of a vector, names must match the tip labels of the tree. If data is a matrix or data.frame, then rownames need to match the tree. **N.B.:** geiger automatically checks and matches the names of the data and the tree but not all packages/functions do this. It is good practice to **always** do this manually to avoid non-sensical results
 
 ## Use geiger's `treedata()` function for this
 cyp_td <- treedata(cyp_phy, cyp_dat)
+str(cyp_td)
+
+dummy_tree <- cyp_phy
+head(dummy_tree$tip.label)
+dummy_tree_drop <- drop.tip(dummy_tree, tip="Cyprinodon_alvarezi")
+dummy_tree_drop
+
 
 ## These match. But here is what happens when this is not the case
 data(geospiza)
-geo_td <- treedata(geospiza$phy, geospiza$dat)
+geo_phy <- geospiza$phy
+geo_dat <- geospiza$dat
+geo_td <- treedata(geo_phy, geo_dat)
 
 ## To do this "by hand"
 geo_phy <- geospiza$phy
@@ -39,12 +58,16 @@ geo_dat_pr
 states <- cyp_td$data[,"jaw.length"]
 tree <- cyp_td$phy
 
+states <- states[tree$tip.label]
+
 ## Brownian motion
 fit_bm <- fitContinuous(tree, states, model="BM")
 
 ## Examine the model object
 fit_bm
 fit_bm$opt
+fit_bm$opt$sigsq
+fit_bm$opt$aic
 
 ## Ornstein-Uhlenbeck
 fit_ou <- fitContinuous(tree, states, model="OU")
@@ -69,6 +92,8 @@ fit_ou$opt
 
 ## Calculate the phylogenetic half-life -- how long does it take for half the infromation in the phylogeny to be erased
 phy_halflife <- log(2)/fit_ou$opt$alpha
+phy_halflife
+
 
 ## Compare this to total tree depth
 phy_halflife / max(branching.times(tree))
@@ -96,13 +121,13 @@ sim_fit <- fitContinuous(sim_phy, sim_dat, SE=0, model="BM")
 sim_fit$opt$sigsq
 
 ## Now add error to the data
-sim_dat_error <- sim_dat + rnorm(100, 0, sd=0.05)
+sim_dat_error <- sim_dat + rnorm(1000, 0, sd=0.1)
 
 sim_fit_error <- fitContinuous(sim_phy, sim_dat_error, SE=0, model="BM")
 
 sim_fit_error$opt$sigsq
 
-sim_fit_wse <- fitContinuous(sim_phy, sim_dat_error, SE=0.05, model="BM")
+sim_fit_wse <- fitContinuous(sim_phy, sim_dat_error, SE=0.1, model="BM")
 
 sim_fit_wse$opt$sigsq
 
@@ -111,7 +136,8 @@ sim_fit_wse$opt$sigsq
 ## Simulate characters on Cyprinodon tree because we don't have discrete data available for this group
 
 ## Make a Q matrix -- same as for molecular characters
-Q <- matrix(c(-0.3, 0.3, 0.1, -0.1), nrow=2)
+Q <- matrix(c(-0.3, 0.3, 0.1, -0.1), nrow=2, byrow = TRUE)
+Q <- matrix(c(-0.3, 0.1, 0.3, -0.1), nrow=2)
 states_dis <- sim.char(tree, par=Q, model="discrete")[,,]
 
 ## ### Fit discrete character models
@@ -123,6 +149,10 @@ fit_sym <- fitDiscrete(tree, states_dis, model="ER")
 fit_dif <- fitDiscrete(tree, states_dis, model="ARD")
 
 ## Compare the models
+aic_sym <- fit_sym$opt$aic
+aic_dif <- fit_dif$opt$aic
+aic_dis <- c(aic_sym, aic_dif)
+
 aic_dis <- c(fit_sym$opt$aic, fit_dif$opt$aic)
 names(aic_dis) <- c("ER", "ARD")
 aicw(aic_dis)
